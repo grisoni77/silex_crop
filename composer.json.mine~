@@ -1,0 +1,15 @@
+{
+    "name": "cris/fineuploader",
+    "description": "silex and finuploader example",
+    "require": {
+        "fabpot/silex-skeleton": "dev"
+    },
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Cristiano Cucco",
+            "email": "cristiano.cucco@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}

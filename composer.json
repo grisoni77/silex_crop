@@ -1,0 +1,24 @@
+{
+    "name": "cris/fineuploader",
+    "description": "silex and finuploader example",
+    "autoload": {
+        "psr-0": {
+            "FU": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "silex/silex": "1.0.x",
+        "silex/web-profiler": "1.0.*",
+        "symfony/monolog-bridge": "~2.2",
+        "symfony/twig-bridge": "~2.2"
+    },
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Cristiano Cucco",
+            "email": "cristiano.cucco@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}

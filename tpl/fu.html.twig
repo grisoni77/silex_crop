@@ -1,0 +1,49 @@
+{% extends "layout.html.twig" %}
+
+{% block javascripts %}
+<script src="{{ app.request.basepath }}/assets/fu/fineuploader-3.5.0.js" type="text/javascript"></script>
+<script>
+    function createUploader() {
+        var uploader = new qq.FineUploader({
+            // Pass the HTML element here
+            element: document.getElementById('fine-uploader'),
+            // or, if using jQuery
+            // element: $('#fine-uploader')[0],
+            // Use the relevant server script url here
+            // if it's different from the default “/server/upload”
+            request: {
+                endpoint: 'handleUploads'
+            },
+            validation: {
+                allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                sizeLimit: 5120000, // 50 kB = 50 * 1024 bytes
+                itemLimit: 1
+            },
+            callbacks: {
+                onComplete: function(id, fileName, responseJSON) {
+                    if (responseJSON.success) {
+                        document.getElementById('preview').innerHTML = ('<img src="{{ app.request.basepath }}/../cache/'+responseJSON.uploadName+'" alt="' + fileName + '">');
+                    }
+                }
+            }
+        });
+    }
+
+    window.onload = createUploader;
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ app.request.basepath }}/assets/fu/fineuploader-3.5.0.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+
+{% block content %}
+    <h1>DEMO</h1>
+    <div id="fine-uploader">
+        <noscript>
+        You must have javascript enabled to run this demo
+        </noscript>
+    </div>
+    <div id="preview"></div>
+{% endblock %}
