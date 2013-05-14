@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "44eec5fb184956269789840c28cc7f89",
+    "hash": "86089fb3c68b5b6aa15bd88f397026b4",
     "packages": [
         {
             "name": "imagine/imagine",
@@ -883,12 +883,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "a8395b3829bb4e3dd178f70abf4a6eeacd8f3393"
+                "reference": "7b298c2d1fa32b2d3ddb7e3b6b3deb56b16b3527"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/a8395b3829bb4e3dd178f70abf4a6eeacd8f3393",
-                "reference": "a8395b3829bb4e3dd178f70abf4a6eeacd8f3393",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/7b298c2d1fa32b2d3ddb7e3b6b3deb56b16b3527",
+                "reference": "7b298c2d1fa32b2d3ddb7e3b6b3deb56b16b3527",
                 "shasum": ""
             },
             "require": {
@@ -924,7 +924,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-05-13 11:46:19"
+            "time": "2013-05-14 05:05:22"
         }
     ],
     "packages-dev": [

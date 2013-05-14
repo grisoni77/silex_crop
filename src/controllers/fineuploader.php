@@ -15,6 +15,9 @@ $fu->get("/uber", function(Application $app) {
     return $app['twig']->render('uuc.html.twig');
 });
 
+$fu->get("/cris", function(Application $app) {
+    return $app['twig']->render('dataurl.html.twig');
+});
 
 $fu->post("handleUploads", function(Application $app, Request $request) {
 
@@ -132,6 +135,83 @@ $fu->post("crop", function(Application $app, Request $request) {
         );
         
     }
+    header("Content-Type: application/json");
+    return json_encode($result);
+});
+
+
+$fu->post("crop-image", function(Application $app, Request $request) {
+    
+    $uploader = $app['fu'];
+
+    // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
+    $uploader->allowedExtensions = $app['fu.allowed_ext'];
+    // Specify max file size in bytes.
+    $uploader->sizeLimit = $app['fu.size_limit'];
+    // Specify the input name set in the javascript.
+    $uploader->inputName = $app['fu.input_name'];
+    // If you want to use resume feature for uploader, specify the folder to save parts.
+    $uploader->chunksFolder = $app['fu.chunks_dir'];
+    // get original name
+    $original_name = $request->files->get($uploader->inputName)->getClientOriginalName();
+    $original_ext = $request->files->get($uploader->inputName)->getClientOriginalExtension();
+    // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
+    $result = $uploader->handleUpload($app['fu.upload_dir'], md5(uniqid()).'.'.$original_ext);
+    
+    if ($result['success'] == 1) 
+    {
+        // To save the upload with a specified name, set the second parameter.
+        // $result = $uploader->handleUpload('uploads/', md5(mt_rand()).'_'.$uploader->getName());
+        // To return a name used for uploaded file you can use the following line.
+        $result['uploadName'] = $uploader->getUploadName();
+        
+        $images = $request->get('imgcrop');
+        $img = $images[0];
+        $crop_data = $request->get('crop');
+        $app['monolog']->addInfo(sprintf('crop data %s',print_r($crop_data, true)));
+    }
+    /*
+    $images = $request->get('imgcrop');
+    $img = $images[0];
+    $crop_data = $request->get('crop');
+    $app['monolog']->addInfo(sprintf('%s',print_r($crop_data, true)));
+    
+    // 1)
+    $name = $img['filename'];
+    $parts = explode(".", $name);
+    $ext = array_pop($parts);
+    $resizedName = implode('.', $parts).'_FULLSIZE'.'.'.$ext;
+    $image = $app['imagine']->open($app['fu.upload_dir'].$resizedName);
+    $app['monolog']->addInfo(sprintf('orimga width %d',$image->getSize()->getWidth()));
+    $percentChange = $image->getSize()->getWidth() / 500;
+
+    unset($image);
+    unlink($app['fu.upload_dir'].$name);
+    rename($app['fu.upload_dir'].$resizedName, $app['fu.upload_dir'].$name);
+    // 2)   
+    $image = $app['imagine']->open($app['fu.upload_dir'].$name);
+    $cropBox = new Box($img['w'], $img['h']);
+    $app['monolog']->addInfo(sprintf('cropbox %d, %d', $cropBox->getWidth(), $cropBox->getHeight()));
+    $cropBox = $cropBox->scale($percentChange);
+    //$cropBox->widen($img['w'] * $percentChange);
+    $app['monolog']->addInfo(sprintf('cropbox2 %d, %d', $cropBox->getWidth(), $cropBox->getHeight()));
+    $cropPoint = new Point($img['x'] * $percentChange, $img['y'] * $percentChange);
+    $app['monolog']->addInfo(sprintf('Percente change %f', $percentChange));
+    // 3)
+    //$app['imagine']
+    //        ->open($app['fu.upload_dir'].$name)
+    $app['monolog']->addInfo(sprintf('cropoint %d, %d', $cropPoint->getX(), $cropPoint->getY()));
+    unlink($app['fu.upload_dir'].$name);
+    $image
+            ->crop($cropPoint, $cropBox)
+            ->save($app['fu.upload_dir'].$name);
+
+    // build result
+    $result = array(
+        'filename' => 'crop_'.$img['filename']
+    );
+     * 
+     */
     header("Content-Type: application/json");
     return json_encode($result);
 });

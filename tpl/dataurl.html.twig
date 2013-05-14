@@ -1,0 +1,86 @@
+{% extends "layout.html.twig" %}
+
+
+{% block css %}
+<link href="{{ app.request.basepath }}/assets/css/default.css" rel="stylesheet" type="text/css" />
+<link href="{{ app.request.basepath }}/assets/css/uploader.css" rel="stylesheet" type="text/css" />
+<link href="{{ app.request.basepath }}/assets/js/jQuery-Impromptu/jquery-impromptu.css" rel="stylesheet" type="text/css" />
+<link href="{{ app.request.basepath }}/assets/js/fu_jquery/fineuploader-3.5.0.css" rel="stylesheet" type="text/css" />
+<link href="{{ app.request.basepath }}/assets/js/Jcrop/jquery.Jcrop.min.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block javascripts %}
+<!--script type="text/javascript" src="../scripts/jquery-1.9.1.min.js"></script-->
+<script type="text/javascript" src="{{ app.request.basepath }}/assets/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="{{ app.request.basepath }}/assets/js/jQuery-Impromptu/jquery-impromptu.js"></script>
+<script type="text/javascript" src="{{ app.request.basepath }}/assets/js/fu_jquery/jquery.fineuploader-3.5.0.js"></script>
+<script type="text/javascript" src="{{ app.request.basepath }}/assets/js/Jcrop/jquery.Jcrop.min.js"></script>
+<script type="text/javascript" src="{{ app.request.basepath }}/assets/js/uploader.js"></script>
+<script type="text/javascript">
+    $(function() {
+
+        $('#UploadImages').crisUploader({
+            //---------------------------------------------------
+            // uploadify options..
+            //---------------------------------------------------
+            fineuploader: {
+                debug : true,
+                callbacks: {
+                    ___onValidate: function(e, file, blob) {
+                        console.log(file);
+                        // Check for the various File API support.
+                        if (window.File && window.FileReader && window.FileList && window.Blob) {
+                          // Great success! All the File APIs are supported.
+                        } else {
+                          alert('The File APIs are not fully supported in this browser.');
+                        }
+                        return false;
+                    }
+                },
+                validation: {
+                    //sizeLimit	: 0,
+                    allowedExtensions: ['jpg', 'jpeg', 'png', 'gif']
+                }
+            },
+            //---------------------------------------------------
+            //now the cropper options..
+            //---------------------------------------------------
+            jcrop: {
+                aspectRatio: 270/203,
+                allowSelect: false, //can reselect
+                allowResize: true, //can resize selection
+                setSelect: [0, 0, 270, 203], //these are the dimensions of the crop box x1,y1,x2,y2
+                minSize: [50, 50], //if you want to be able to resize, use these
+                maxSize: [500, 500]
+            },
+                
+            folder: '../../uploads/', // only used in uber, not passed to server
+        });
+
+    });
+   
+    </script>
+{% endblock %}
+
+
+
+{% block content %}
+    <h1>DEMO</h1>
+    <div id="wrapper">
+        <h1>UberUploadCropper</h1>
+        <p>Advanced Example which demonstrates the uploading a large image, scaling a smaller copy to fit the browser, crop, and resize the original full size image.  This method maintains better image quality.</p>
+
+        <div id="UploadImages">
+            <noscript>Please enable javascript to upload and crop images.</noscript>
+        </div>
+
+        <div id="PhotoCrops">
+            <!-- The cropped images will be populated here -->
+        </div>
+        
+        <div id="PhotoPrevs">
+            <!-- The cropped images will be populated here -->
+        </div>
+    </div>
+{% endblock %}
