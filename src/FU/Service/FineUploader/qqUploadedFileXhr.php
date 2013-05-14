@@ -20,6 +20,7 @@ echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
 
 /******************************************/
 
+namespace FU\Service\FineUploader;
 
 
 /**

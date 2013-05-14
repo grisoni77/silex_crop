@@ -11,7 +11,8 @@
         "silex/silex": "1.0.x",
         "silex/web-profiler": "1.0.*",
         "symfony/monolog-bridge": "~2.2",
-        "symfony/twig-bridge": "~2.2"
+        "symfony/twig-bridge": "~2.2",
+        "neutron/silex-imagine-provider": "dev-master"
     },
     "license": "GPL",
     "authors": [

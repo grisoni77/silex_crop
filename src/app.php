@@ -5,6 +5,7 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 use FU\Service\Provider\FineUploaderProvider;
+use Neutron\Silex\Provider\ImagineServiceProvider;
     
 $app = new Application();
 
@@ -24,6 +25,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 */
 
 $app->register(new FineUploaderProvider());
+$app->register(new ImagineServiceProvider());
+
 
 
 $app->get("/", function() use ($app) {

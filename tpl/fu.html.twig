@@ -1,7 +1,7 @@
 {% extends "layout.html.twig" %}
 
 {% block javascripts %}
-<script src="{{ app.request.basepath }}/assets/fu/fineuploader-3.5.0.js" type="text/javascript"></script>
+<script src="{{ app.request.basepath }}/assets/js/fu/fineuploader-3.5.0.js" type="text/javascript"></script>
 <script>
     function createUploader() {
         var uploader = new qq.FineUploader({
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block css %}
-    <link href="{{ app.request.basepath }}/assets/fu/fineuploader-3.5.0.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ app.request.basepath }}/assets/js/fu/fineuploader-3.5.0.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
 
