@@ -176,25 +176,32 @@ $fu->post("crop-image", function(Application $app, Request $request) {
                 );
                 $app['monolog']->addDebug(sprintf('crop data %s', print_r($cd, true)));
 
-                // calcola box per crop
                 $image = $app['imagine']->open($app['fu.upload_dir'] . $result['uploadName']);
                 $app['monolog']->addDebug(sprintf('orimga width %d', $image->getSize()->getWidth()));
+                // calculate scale ratio
                 $percentChange = $image->getSize()->getWidth() / $cd['rw'];
                 $app['monolog']->addDebug(sprintf('Percente change %f', $percentChange));
-                // 
+                
+                // build box and point for crop
                 $cropBox = new Box($cd['w'], $cd['h']);
                 $app['monolog']->addDebug(sprintf('cropbox %d, %d', $cropBox->getWidth(), $cropBox->getHeight()));
                 $cropBox = $cropBox->scale($percentChange);
-                //$cropBox->widen($img['w'] * $percentChange);
                 $app['monolog']->addDebug(sprintf('cropbox2 %d, %d', $cropBox->getWidth(), $cropBox->getHeight()));
-                $cropPoint = new Point($cd['x'] * $percentChange, $cd['y'] * $percentChange);
-                $app['monolog']->addDebug(sprintf('croppoint %d, %d', $cropPoint->getX(), $cropPoint->getY()));
-
-                // finally crop and resize to desired dimension
-                $image->crop($cropPoint, $cropBox);
+                
+                // if cropbox is different from real size
+                if ($cropBox->getWidth() != $image->getSize()->getWidth() || $cropBox->getHeight() != $image->getSize()->getHeight()) {
+                    $cropPoint = new Point($cd['x'] * $percentChange, $cd['y'] * $percentChange);
+                    $app['monolog']->addDebug(sprintf('croppoint %d, %d', $cropPoint->getX(), $cropPoint->getY()));
+                    // finally crop
+                    $image->crop($cropPoint, $cropBox);
+                }
+                
+                // finally resize to desired dimension
                 if (isset($app['fu.final_width'])) { 
                     $image->resize($image->getSize()->widen($app['fu.final_width']));
                 }
+                
+                // save image
                 $image->save($app['fu.upload_dir'] . $result['uploadName']);
             }
             

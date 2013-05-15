@@ -1,7 +1,22 @@
-// template from http://jqueryboilerplate.com/
+/* jQuery Tiny Pub/Sub - v0.7 - 10/27/2011
+ * http://benalman.com/
+ * Copyright (c) 2011 "Cowboy" Ben Alman; Licensed MIT, GPL */
+;
+(function(a) {
+    var b = a({});
+    a.subscribe = function() {
+        b.on.apply(b, arguments)
+    }, a.unsubscribe = function() {
+        b.off.apply(b, arguments)
+    }, a.publish = function() {
+        b.trigger.apply(b, arguments)
+    }
+})(jQuery)
+
+// // template from http://jqueryboilerplate.com/
 // the semi-colon before function invocation is a safety net against concatenated
 // scripts and/or other plugins which may not be closed properly.
-;
+        ;
 (function($, window, document, undefined) {
 
     // undefined is used here as the undefined global variable in ECMAScript 3 is
@@ -34,11 +49,14 @@
         finalWidth: 270,
         finalHeight: 203
     };
-    
+
     // The actual plugin constructor
     function JqueryCropUploader(element, options) {
         this.el = element;
         this.$el = $(this.element);
+        this.cropCnt = $('#PhotoCrops');
+        this.prevCnt = $('#PhotoPrevs');
+        
         self = this;
 
         // jQuery has an extend method which merges the contents of two or
@@ -92,27 +110,38 @@
             options.request.params.crop = function() {
                 that.getCropData();
             };
-            options.request.params.x = function() {return that.getX();}
-            options.request.params.y = function() {return that.getY();}
-            options.request.params.w = function() {return that.getW();}
-            options.request.params.h = function() {return that.getH();}
+            options.request.params.x = function() {
+                return that.getX();
+            }
+            options.request.params.y = function() {
+                return that.getY();
+            }
+            options.request.params.w = function() {
+                return that.getW();
+            }
+            options.request.params.h = function() {
+                return that.getH();
+            }
             options.request.params.rw = this.options.resizeWidth;
             options.request.params.wf = this.options.finalWidth;
             options.request.params.hf = this.options.finalHeight;
             // init uploader
             this.uploader = $(el).fineUploader(options);
-                
+
             // define event handlers
             this.uploader.on('complete', function(event, id, fileName, responseJson) {
                 if (responseJson.error) {
-                    alert(responseJson.error);
+                    if (that.completePromise != undefined) {
+                        that.completePromise.reject(responseJson);
+                        that.setCompletePromise(null);
+                    }
                     return false;
                 }
                 that.imgdata = responseJson;
 
                 $(el).trigger('uploadComplete', [responseJson]);
                 if (that.completePromise != undefined) {
-                    that.completePromise.success(responseJson);
+                    that.completePromise.resolve(responseJson);
                     that.setCompletePromise(null);
                 }
             });
@@ -125,7 +154,7 @@
             if (typeof(options.callbacks.onValidate) == 'function') {
                 this.uploader.on('validate', options.callbacks.onValidate);
             }
-            
+
         },
         initDnDUI: function(el, options) {
             var that = this;
@@ -169,25 +198,28 @@
                     alert("not a valid file: " + file.type);
                 };
                 img.src = _URL.createObjectURL(file);
-                img.style.width = this.options.resizeWidth+'px';
+                img.style.width = this.options.resizeWidth + 'px';
                 //console.log(img);
                 that.setBusy(true);
-                var promise = new qq.Promise();
-                promise.then(
-                        function() {
-                            var cpromise = new qq.Promise();
-                            that.setCompletePromise(cpromise.then(function(data) {
-                                that.showCroppedImage(data);
-                            }, null));
-                            $(that.el).fineUploader('addFiles', that.files); //this submits the dropped files to Fine Uploader
-                            that.setBusy(false);
-                            that.cleanUI();
-                        },
-                        function() {
-                            that.setBusy(false);
-                            that.cleanUI();
-                        }
-                );
+
+                var promise = new $.Deferred();
+                promise
+                .done(
+                    function() {
+                        var cpromise = new $.Deferred();
+                        cpromise.done(function(data) {
+                            that.showCroppedImage(data);
+                        }).fail(function(data){
+                            console.log(data.error);
+                        });
+                        that.setCompletePromise(cpromise);
+                        $(that.el).fineUploader('addFiles', that.files); //this submits the dropped files to Fine Uploader
+                    }
+                )
+                .always(function() {
+                        that.setBusy(false);
+                        that.cleanUI();
+                });
 
                 // hide dropzone
                 that.dropZone.hide();
@@ -203,7 +235,7 @@
             this.$el.trigger('startCropUI', [img]);
 
             // init UI CROP
-            $('#PhotoCrops').append(img);
+            this.cropCnt.append(img);
             this.options.jcrop.onChange = function() {
                 that.setCropData();
             }
@@ -215,7 +247,11 @@
             $(img).after($('<button>').text('Crop').click(function() {
                 that.jcrop_api.disable();
                 //console.log(endCropPromise, 'crop');
-                endCropPromise.success();
+                endCropPromise.resolve();
+            })).after($('<button>').text('Cancel').click(function() {
+                that.jcrop_api.disable();
+                //console.log(endCropPromise, 'crop');
+                endCropPromise.reject();
             }));
 
             // trigger event 'end_crop'
@@ -255,13 +291,14 @@
             this.state.busy = busy;
         },
         cleanUI: function() {
-            $('#myDropZone').show();
+            this.dropZone.show();
             this.jcrop_api.destroy();
             this.jcrop_api = null;
-            $('#PhotoCrops').empty();
+            this.fileui.attr('value', '');
+            this.cropCnt.empty();
         },
         showCroppedImage: function(data) {
-            $('#PhotoCrops').html($('<img>').attr('src', this.options.folder + data.uploadName));
+            this.prevCnt.html($('<img>').attr('src', this.options.folder + data.uploadName));
         }
     };
 

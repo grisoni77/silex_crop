@@ -15,3 +15,7 @@ $app['fu.allowed_ext'] = array("jpg", "jpeg", "png");//array('jpeg', 'jpg', 'png
 $app['fu.final_width'] = 270;
 
 
+$app['imagine.driver'] = 'Gd';
+//$app['imagine.driver'] = 'Imagick';
+
+
